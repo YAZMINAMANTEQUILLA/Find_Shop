@@ -1,20 +1,17 @@
 const express = require('express');
 const Router = express.Router();
-const UsuarioController = require('../controlers/controlador');
+const { UsuarioController } = require('../controlers/controlador');
 
-// CONTROLADORES DE USUARIOS
+var usuarioController =  new UsuarioController() 
+// RUTAS DE USUARIOS
 
-Router.get('/listar', UsuarioController.getUsuarios);               
-Router.get('/detalle/:id', UsuarioController.getUsuarioById);      
-Router.delete('/eliminar/:id', UsuarioController.eliminarUsuario); 
-Router.put('/editar/:id', UsuarioController.editarUsuario);
+Router.get('/listar', usuarioController.getUsuarios);               
+Router.get('/detalle/:id', usuarioController.getUsuarioById);      
+Router.delete('/eliminar/:id', usuarioController.eliminarUsuario); 
+Router.put('/editar/:id', usuarioController.editarUsuario);
 
-Router.post('/registro', UsuarioController.crearUsuario);         
-Router.post('/login', UsuarioController.loginUsuario);            
+Router.post('/registro', usuarioController.crearUsuario);         
+Router.post('/login', usuarioController.loginUsuario);            
 
-
-Router.get('/', (req, res) => {
-  res.send('Hello World!');
-});
 
 module.exports = Router;

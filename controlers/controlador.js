@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 
+// CLASE USUARIO
 class UsuarioController {
   async getUsuarios(req, res) {
     try {
@@ -133,4 +134,72 @@ class UsuarioController {
 
 }
 
-module.exports = new UsuarioController();
+// CLASE TIENDA
+
+class TiendaModel {
+  static listar(req, res) {
+    const sql = "SELECT * FROM Tienda";
+    pool.query(sql, (err, results) => {
+      if (err) return res.status(500).json({ error: "Error al obtener tiendas" });
+      res.status(200).json(results);
+    });
+  }
+  static obtenerPorId(req, res) {
+    const { id } = req.params;
+    const sql = "SELECT * FROM Tienda WHERE id = ?";
+    pool.query(sql, [id], (err, results) => {
+      if (err) return res.status(500).json({ error: "Error al buscar tienda" });
+      if (results.length === 0) return res.status(404).json({ message: "Tienda no encontrada" });
+      res.status(200).json(results[0]);
+    });
+  }
+
+  static crear(req, res) {
+    const {
+      nombre_tienda,
+      nombre_usuario,
+      Descripcion,
+      Categoria,
+      estado,
+      ubicacion,
+      latitud,
+      longitud
+    } = req.body;
+
+    const sql = `
+      INSERT INTO Tienda 
+      (nombre_tienda, nombre_usuario, Descripcion, Categoria, estado, ubicacion, latitud, longitud) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    pool.query(sql, [nombre_tienda, nombre_usuario, Descripcion, Categoria, estado, ubicacion, latitud, longitud], (err, result) => {
+      if (err) return res.status(500).json({ error: "Error al crear tienda" });
+      res.status(201).json({ message: "Tienda creada", id: result.insertId });
+    });
+  }
+
+  static actualizar(req, res) {
+    const { id } = req.params;
+    const data = req.body;
+
+    const sql = "UPDATE Tienda SET ? WHERE id = ?";
+    pool.query(sql, [data, id], (err, result) => {
+      if (err) return res.status(500).json({ error: "Error al actualizar tienda" });
+      res.status(200).json({ message: "Tienda actualizada correctamente" });
+    });
+  }
+
+  static eliminar(req, res) {
+    const { id } = req.params;
+    const sql = "DELETE FROM Tienda WHERE id = ?";
+    pool.query(sql, [id], (err, result) => {
+      if (err) return res.status(500).json({ error: "Error al eliminar tienda" });
+      res.status(200).json({ message: "Tienda eliminada" });
+    });
+  }
+}
+
+module.exports = {
+  TiendaModel: TiendaModel,               
+  UsuarioController: UsuarioController,
+};
