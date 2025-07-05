@@ -111,29 +111,34 @@ class UsuarioController {
   }
 
   editarUsuario(req, res) {
-  const { id } = req.params;
-  const { nombre, usuario, clave } = req.body;
-  const hash = bcrypt.hash(clave, 10);
+    const { id } = req.params;
+    const { nombre, usuario, clave } = req.body;
 
-  if (!nombre || !usuario) {
-    return res.status(400).json({ error: 'Faltan campos requeridos' });
-  }
-
-  pool.query(
-    'UPDATE usuarios SET nombre = ?, clave = ?, usuario = ? WHERE id = ?',
-    [nombre, hash ,usuario, id],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ error: 'Usuario no encontrado' });
-      }
-      res.json({ message: 'Usuario actualizado correctamente' });
+    if (!nombre || !usuario || !clave) {
+      return res.status(400).json({ error: "Faltan campos requeridos" });
     }
-  );
-}
 
+    // Encriptar la clave con callback
+    bcrypt.hash(clave, 10, (err, hash) => {
+      if (err) {
+        return res.status(500).json({ error: "Error al encriptar la clave" });
+      }
+
+      pool.query(
+        "UPDATE usuarios SET nombre = ?, clave = ?, usuario = ? WHERE id = ?",
+        [nombre, hash, usuario, id],
+        (err, result) => {
+          if (err) {
+            return res.status(500).json({ error: err.message });
+          }
+          if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Usuario no encontrado" });
+          }
+          res.json({ message: "Usuario actualizado correctamente" });
+        }
+      );
+    });
+  }
 }
 
 // CLASE TIENDA
@@ -142,7 +147,8 @@ class TiendaModel {
   static listar(req, res) {
     const sql = "SELECT * FROM Tienda";
     pool.query(sql, (err, results) => {
-      if (err) return res.status(500).json({ error: "Error al obtener tiendas" });
+      if (err)
+        return res.status(500).json({ error: "Error al obtener tiendas" });
       res.status(200).json(results);
     });
   }
@@ -151,7 +157,8 @@ class TiendaModel {
     const sql = "SELECT * FROM Tienda WHERE id = ?";
     pool.query(sql, [id], (err, results) => {
       if (err) return res.status(500).json({ error: "Error al buscar tienda" });
-      if (results.length === 0) return res.status(404).json({ message: "Tienda no encontrada" });
+      if (results.length === 0)
+        return res.status(404).json({ message: "Tienda no encontrada" });
       res.status(200).json(results[0]);
     });
   }
@@ -165,7 +172,7 @@ class TiendaModel {
       estado,
       ubicacion,
       latitud,
-      longitud
+      longitud,
     } = req.body;
 
     const sql = `
@@ -174,10 +181,24 @@ class TiendaModel {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    pool.query(sql, [nombre_tienda, nombre_usuario, Descripcion, Categoria, estado, ubicacion, latitud, longitud], (err, result) => {
-      if (err) return res.status(500).json({ error: "Error al crear tienda" });
-      res.status(201).json({ message: "Tienda creada", id: result.insertId });
-    });
+    pool.query(
+      sql,
+      [
+        nombre_tienda,
+        nombre_usuario,
+        Descripcion,
+        Categoria,
+        estado,
+        ubicacion,
+        latitud,
+        longitud,
+      ],
+      (err, result) => {
+        if (err)
+          return res.status(500).json({ error: "Error al crear tienda" });
+        res.status(201).json({ message: "Tienda creada", id: result.insertId });
+      }
+    );
   }
 
   static actualizar(req, res) {
@@ -186,7 +207,8 @@ class TiendaModel {
 
     const sql = "UPDATE Tienda SET ? WHERE id = ?";
     pool.query(sql, [data, id], (err, result) => {
-      if (err) return res.status(500).json({ error: "Error al actualizar tienda" });
+      if (err)
+        return res.status(500).json({ error: "Error al actualizar tienda" });
       res.status(200).json({ message: "Tienda actualizada correctamente" });
     });
   }
@@ -195,13 +217,14 @@ class TiendaModel {
     const { id } = req.params;
     const sql = "DELETE FROM Tienda WHERE id = ?";
     pool.query(sql, [id], (err, result) => {
-      if (err) return res.status(500).json({ error: "Error al eliminar tienda" });
+      if (err)
+        return res.status(500).json({ error: "Error al eliminar tienda" });
       res.status(200).json({ message: "Tienda eliminada" });
     });
   }
 }
 
 module.exports = {
-  TiendaModel: TiendaModel,               
+  TiendaModel: TiendaModel,
   UsuarioController: UsuarioController,
 };
