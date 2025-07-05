@@ -112,14 +112,16 @@ class UsuarioController {
 
   editarUsuario(req, res) {
   const { id } = req.params;
-  const { nombre, usuario } = req.body;
+  const { nombre, usuario, clave } = req.body;
+  const hash = bcrypt.hash(clave, 10);
+
   if (!nombre || !usuario) {
     return res.status(400).json({ error: 'Faltan campos requeridos' });
   }
 
   pool.query(
-    'UPDATE usuarios SET nombre = ?, usuario = ? WHERE id = ?',
-    [nombre, usuario, id],
+    'UPDATE usuarios SET nombre = ?, clave = ?, usuario = ? WHERE id = ?',
+    [nombre, hash ,usuario, id],
     (err, result) => {
       if (err) {
         return res.status(500).json({ error: err.message });
