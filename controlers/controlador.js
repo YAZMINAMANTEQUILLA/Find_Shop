@@ -238,7 +238,7 @@ class ProductoModel {
 
   static obtenerPorId(req, res) {
     const { id } = req.params;
-    const sql = "SELECT * FROM Producto WHERE id_producto = ?";
+    const sql = "SELECT * FROM Producto WHERE id_tienda = ?";
     pool.query(sql, [id], (err, results) => {
       if (err)
         return res.status(500).json({ error: "Error al buscar producto" });
