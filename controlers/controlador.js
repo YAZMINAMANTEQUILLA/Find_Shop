@@ -227,6 +227,18 @@ class TiendaModel {
 // CLASE PRODUCTO
 
 class ProductoModel {
+  static buscarProducto(req, res) {
+  const { nombre } = req.params;
+  const sql = "SELECT * FROM Producto WHERE nombre LIKE ?";
+  pool.query(sql, [`%${nombre}%`], (err, results) => {
+    if (err) return res.status(500).json({ error: "Error al buscar productos" });
+    if (results.length === 0)
+      return res.status(404).json({ message: "No se encontraron productos" });
+    res.status(200).json(results); // importante: devolver como array
+  });
+}
+
+
   static listar(req, res) {
     const sql = "SELECT * FROM Producto";
     pool.query(sql, (err, results) => {
