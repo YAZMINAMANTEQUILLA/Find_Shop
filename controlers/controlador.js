@@ -242,21 +242,14 @@ class ProductoModel {
     pool.query(sql, [id], (err, results) => {
       if (err)
         return res.status(500).json({ error: "Error al buscar producto" });
-      if (results.length === 0)
-        return res.status(404).json({ message: "Producto no encontrado" });
-      res.status(200).json(results[0]);
+
+      // ✅ Devuelve SIEMPRE una lista (aunque esté vacía)
+      res.status(200).json(results);
     });
   }
 
   static crear(req, res) {
-    const {
-      id_tienda,
-      nombre,
-      descripcion,
-      id_usuario,
-      img,
-      fecha,
-    } = req.body;
+    const { id_tienda, nombre, descripcion, id_usuario, img, fecha } = req.body;
 
     const sql = `
       INSERT INTO Producto 
@@ -270,7 +263,9 @@ class ProductoModel {
       (err, result) => {
         if (err)
           return res.status(500).json({ error: "Error al crear producto" });
-        res.status(201).json({ message: "Producto creado", id: result.insertId });
+        res
+          .status(201)
+          .json({ message: "Producto creado", id: result.insertId });
       }
     );
   }
@@ -301,5 +296,5 @@ class ProductoModel {
 module.exports = {
   TiendaModel: TiendaModel,
   UsuarioController: UsuarioController,
-  ProductoModel: ProductoModel
+  ProductoModel: ProductoModel,
 };
