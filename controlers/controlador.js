@@ -224,7 +224,82 @@ class TiendaModel {
   }
 }
 
+// CLASE PRODUCTO
+
+class ProductoModel {
+  static listar(req, res) {
+    const sql = "SELECT * FROM Producto";
+    pool.query(sql, (err, results) => {
+      if (err)
+        return res.status(500).json({ error: "Error al obtener productos" });
+      res.status(200).json(results);
+    });
+  }
+
+  static obtenerPorId(req, res) {
+    const { id } = req.params;
+    const sql = "SELECT * FROM Producto WHERE id_producto = ?";
+    pool.query(sql, [id], (err, results) => {
+      if (err)
+        return res.status(500).json({ error: "Error al buscar producto" });
+      if (results.length === 0)
+        return res.status(404).json({ message: "Producto no encontrado" });
+      res.status(200).json(results[0]);
+    });
+  }
+
+  static crear(req, res) {
+    const {
+      id_tienda,
+      nombre,
+      descripcion,
+      id_usuario,
+      img,
+      fecha,
+    } = req.body;
+
+    const sql = `
+      INSERT INTO Producto 
+      (id_tienda, nombre, descripcion, id_usuario, img, fecha) 
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    pool.query(
+      sql,
+      [id_tienda, nombre, descripcion, id_usuario, img, fecha],
+      (err, result) => {
+        if (err)
+          return res.status(500).json({ error: "Error al crear producto" });
+        res.status(201).json({ message: "Producto creado", id: result.insertId });
+      }
+    );
+  }
+
+  static actualizar(req, res) {
+    const { id } = req.params;
+    const data = req.body;
+
+    const sql = "UPDATE Producto SET ? WHERE id_producto = ?";
+    pool.query(sql, [data, id], (err, result) => {
+      if (err)
+        return res.status(500).json({ error: "Error al actualizar producto" });
+      res.status(200).json({ message: "Producto actualizado correctamente" });
+    });
+  }
+
+  static eliminar(req, res) {
+    const { id } = req.params;
+    const sql = "DELETE FROM Producto WHERE id_producto = ?";
+    pool.query(sql, [id], (err, result) => {
+      if (err)
+        return res.status(500).json({ error: "Error al eliminar producto" });
+      res.status(200).json({ message: "Producto eliminado" });
+    });
+  }
+}
+
 module.exports = {
   TiendaModel: TiendaModel,
   UsuarioController: UsuarioController,
+  ProductoModel: ProductoModel
 };

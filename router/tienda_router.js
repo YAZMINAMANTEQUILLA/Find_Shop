@@ -2,8 +2,7 @@ const express = require('express');
 const Router = express.Router();
 const {TiendaModel} = require('../controlers/controlador');
 
-// RUTAS DE USUARIOS
-
+// RUTAS DE TIENDAS
 
 Router.get("/listar", TiendaModel.listar);
 Router.get("/obtener/:id", TiendaModel.obtenerPorId);

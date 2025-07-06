@@ -8,6 +8,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api/usuarios",require('./router/router'));
 app.use("/api/tienda",require('./router/tienda_router'));
+app.use("/api/producto",require('./router/producto_router'));
 
 
 
