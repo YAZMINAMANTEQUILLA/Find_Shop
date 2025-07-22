@@ -1,6 +1,6 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const Usuario = require('../Models/ModeloFirebase');
+const { Usuario } = require('../Models/ModeloFirebase');
 const bcrypt = require('bcrypt');
 
 const SECRET = process.env.JWT_SECRET;
