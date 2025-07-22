@@ -1,6 +1,6 @@
 const express = require('express');
 const Router = express.Router();
-const {ProductoModel} = require('../controlers/controlador');
+const {ProductoModel} = require('../Models/Modelo');
 
 
 // RUTAS DE PRODUCTOS
